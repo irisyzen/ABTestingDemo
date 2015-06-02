@@ -60,11 +60,11 @@ BOOL CMusicStoreDlg::OnInitDialog()
 	if (m_leanplum)
 	{
 		m_leanplum->Initialize(
-			leanplumAPIKeys("app_Knlu3CAVL3pZIm5mU4hW8XyChNUXIA0Sir3V0hhN7Ug",
-							"prod_OQfXouWHnET1rzoxlhrP7w6oce4k0dI8VrlB3JggLR8",
-							"dev_fu5NugzmvTTFnmld7O0u8xJ7IjeCq0stgqNlpn6iXu4",
-							"exp_KGgxUUTGS7SExGsjFhJWt9dPbbkYyW6NREwf9v4zqNM",
-							"cro_hUnDzzC4XP9XGAtrpFVylhr9U8nuUWvIqTKqtgtMZyQ"),
+			leanplumAPIKeys("app_id",
+							"prod_key,
+							"dev_key",
+							"exp_key",
+							"cro_key"),
 							m_userID,
 							m_deviceID);
 		std::vector<leanplumVar> varList;
