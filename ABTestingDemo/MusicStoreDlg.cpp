@@ -105,7 +105,7 @@ BOOL CMusicStoreDlg::OnInitDialog()
 	GetDlgItem(IDC_STATIC_PREV)->SetFont(&m_staticFont);
 	GetDlgItem(IDC_STATIC_NEXT)->SetFont(&m_staticFont);
 	
-	bool asyncMode = false; // update it
+	bool asyncMode = true; // update it
 
 	bool maleFirst = true;
 	LoadLeanplumSDK();
