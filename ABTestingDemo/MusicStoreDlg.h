@@ -13,6 +13,10 @@ public:
 	
 	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedAlbum(UINT nID);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+
+	bool m_loadSuccess;
+	bool m_maleFirst;
 
 // Dialog Data
 	enum { IDD = IDD_DIALOG_MUSIC_STORE };
@@ -39,4 +43,6 @@ private:
 
 	HMODULE m_leanplumDLL;
 	ILeanplumWSDK* m_leanplum;
+	
+	unsigned int m_count;
 };

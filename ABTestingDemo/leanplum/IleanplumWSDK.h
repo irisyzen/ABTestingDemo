@@ -11,10 +11,13 @@
 #include "leanplumWSDKDefine.h"
 #include <vector>
 
+typedef void (*fnStatusCallBack)(ActionType type, bool success, std::string errorMsg, void* extraInfo, void* context);
+
 class ILeanplumWSDK
 {
 public:
 	virtual void Initialize(const leanplumAPIKeys& apiKeys, unsigned int userID, unsigned int deviceID) = 0;
+	virtual void EnableAsyncMode(bool enable, fnStatusCallBack statusCBFn, void* context) = 0; 
 
 	virtual void SetAPIKeys(const leanplumAPIKeys& apiKeys) = 0;
 	virtual void SetUserID(unsigned int userID) = 0;

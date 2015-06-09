@@ -11,9 +11,57 @@
 
 IMPLEMENT_DYNAMIC(CMusicStoreDlg, CDialogEx)
 
+void StatusCallBack(ActionType type, bool success, std::string errorMsg, void* extraInfo, void* context)
+{
+	switch (type)
+	{
+	case ActionType_None:
+	case ActionType_Start:
+	case ActionType_Stop:
+	case ActionType_SetVars:	
+	case ActionType_SetUserAttributes:
+	case ActionType_Track:
+		break;
+	case ActionType_GetVars:
+		{
+			if (!context)
+			{
+				break;
+			}
+
+			CMusicStoreDlg* dlg = static_cast<CMusicStoreDlg*>(context);
+			if (success)
+			{
+				dlg->m_loadSuccess = true;
+				std::vector<leanplumVar>* varList = reinterpret_cast<std::vector<leanplumVar>*> (extraInfo);
+				if (!varList)
+				{
+					break;
+				}
+
+				for (size_t i=0; i<varList->size(); ++i)
+				{
+					if ("AlbumOrder" == varList->at(i).name)
+					{						
+						if ("MaleFirst" == varList->at(i).sValue)
+							dlg->m_maleFirst = true;	
+						else
+							dlg->m_maleFirst = false;
+						break;
+					}
+				}
+			}			
+		}
+		break;
+	}
+}
+
 CMusicStoreDlg::CMusicStoreDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CMusicStoreDlg::IDD, pParent)
 	, m_leanplum(NULL)
+	, m_loadSuccess(false)
+	, m_count(0)
+	, m_maleFirst(false)
 {
 
 }
@@ -30,6 +78,7 @@ void CMusicStoreDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CMusicStoreDlg, CDialogEx)
 	ON_BN_CLICKED(IDOK, &CMusicStoreDlg::OnBnClickedOk)
 	ON_COMMAND_RANGE(IDC_BUTTON_ALBUM1, IDC_BUTTON_ALBUM4, &CMusicStoreDlg::OnBnClickedAlbum)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 // CMusicStoreDlg message handlers
@@ -56,6 +105,8 @@ BOOL CMusicStoreDlg::OnInitDialog()
 	GetDlgItem(IDC_STATIC_PREV)->SetFont(&m_staticFont);
 	GetDlgItem(IDC_STATIC_NEXT)->SetFont(&m_staticFont);
 	
+	bool asyncMode = false; // update it
+
 	bool maleFirst = true;
 	LoadLeanplumSDK();
 	if (m_leanplum)
@@ -68,6 +119,15 @@ BOOL CMusicStoreDlg::OnInitDialog()
 							CRO_KEY),
 							m_userID,
 							m_deviceID);
+
+		if (asyncMode)
+		{
+			m_leanplum->EnableAsyncMode(true, StatusCallBack, this);
+		}
+		else
+		{
+			m_loadSuccess = true;
+		}
 
 		std::vector<leanplumVar> varList;
 /*		leanplumVar var;
@@ -86,21 +146,22 @@ BOOL CMusicStoreDlg::OnInitDialog()
 		varList.clear();
 		m_leanplum->Start();
 		m_leanplum->GetVars(varList);
-
-		for (size_t i=0; i<varList.size(); ++i)
+		if (!asyncMode)
 		{
-			if ("AlbumOrder" == varList[i].name)
+			for (size_t i=0; i<varList.size(); ++i)
 			{
-				if ("MaleFirst" == varList[i].sValue)				
-					maleFirst = true;				
-				else
-					maleFirst = false;
-				break;
+				if ("AlbumOrder" == varList[i].name)
+				{						
+					if ("MaleFirst" == varList[i].sValue)
+						m_maleFirst = true;	
+					else
+						m_maleFirst = false;
+					break;
+				}
 			}
 		}
-	}
-
-	InitializeAlbum(maleFirst);
+		SetTimer(1, 200, NULL);
+	}	
 
 	return TRUE;
 }
@@ -120,6 +181,7 @@ void CMusicStoreDlg::ReleaseLeanplumSDK()
 {
 	if (NULL != m_leanplumDLL)
 	{
+		OutputDebugStringA("Release leanplum SDK");
 		FreeLibrary(m_leanplumDLL);
 	}
 }
@@ -194,4 +256,41 @@ void CMusicStoreDlg::OnBnClickedAlbum(UINT nID)
 	{
 		m_leanplum->Track("Purchase", value);
 	}
+}
+
+void CMusicStoreDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	if (1 == nIDEvent)
+	{	
+		if (m_loadSuccess)
+		{
+			m_count = 0;
+			GetDlgItem(IDC_BUTTON_ALBUM1)->ShowWindow(TRUE);
+			GetDlgItem(IDC_BUTTON_ALBUM2)->ShowWindow(TRUE);
+			GetDlgItem(IDC_BUTTON_ALBUM3)->ShowWindow(TRUE);
+			GetDlgItem(IDC_BUTTON_ALBUM4)->ShowWindow(TRUE);
+
+			GetDlgItem(IDC_STATIC_MSG)->ShowWindow(FALSE);
+
+			InitializeAlbum(m_maleFirst);
+		}
+		else
+		{
+			++m_count;
+			if (0 == m_count%3)
+			{
+				GetDlgItem(IDC_STATIC_MSG)->SetWindowTextW(L"Loading.");
+			}
+			else if (1 == m_count%3)
+			{
+				GetDlgItem(IDC_STATIC_MSG)->SetWindowTextW(L"Loading..");
+			}
+			else
+			{
+				GetDlgItem(IDC_STATIC_MSG)->SetWindowTextW(L"Loading...");
+			}
+		}
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
 }

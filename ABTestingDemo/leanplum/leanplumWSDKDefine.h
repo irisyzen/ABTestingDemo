@@ -2,6 +2,17 @@
 
 #include <string>
 
+enum ActionType
+{
+	ActionType_None,
+	ActionType_Start,
+	ActionType_Stop,
+	ActionType_SetVars,
+	ActionType_GetVars,
+	ActionType_SetUserAttributes,
+	ActionType_Track
+};
+
 struct leanplumAPIKeys
 {
 	std::string appID;
