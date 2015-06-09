@@ -101,8 +101,6 @@ BOOL CABTestingDemoDlg::OnInitDialog()
 	m_gender.InsertString(1, L"Female");
 	m_gender.SetCurSel(0);	
 
-	// [iris]
-	//LoadAPIKeys();
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 

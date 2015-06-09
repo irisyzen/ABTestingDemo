@@ -5,6 +5,7 @@
 #include "ABTestingDemo.h"
 #include "MusicStoreDlg.h"
 #include "afxdialogex.h"
+#include "APIKeysDefinition.h"
 
 // CMusicStoreDlg dialog
 
@@ -60,13 +61,14 @@ BOOL CMusicStoreDlg::OnInitDialog()
 	if (m_leanplum)
 	{
 		m_leanplum->Initialize(
-			leanplumAPIKeys("app_id",
-							"prod_key,
-							"dev_key",
-							"exp_key",
-							"cro_key"),
+			leanplumAPIKeys(APP_ID,
+							PROD_KEY,
+							DEV_KEY,
+							EXP_KEY,
+							CRO_KEY),
 							m_userID,
 							m_deviceID);
+
 		std::vector<leanplumVar> varList;
 /*		leanplumVar var;
 		var.name = "AlbumOrder";

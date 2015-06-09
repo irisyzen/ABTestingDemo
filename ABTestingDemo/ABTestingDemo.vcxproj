@@ -111,6 +111,7 @@
   <ItemGroup>
     <ClInclude Include="ABTestingDemo.h" />
     <ClInclude Include="ABTestingDemoDlg.h" />
+    <ClInclude Include="APIKeysDefinition.h" />
     <ClInclude Include="leanplum\IleanplumWSDK.h" />
     <ClInclude Include="MusicStoreDlg.h" />
     <ClInclude Include="Resource.h" />

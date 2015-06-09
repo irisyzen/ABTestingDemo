@@ -1,0 +1,5 @@
+#define APP_ID		"app_id"
+#define PROD_KEY	"prod_key"
+#define DEV_KEY		"dev_key"
+#define EXP_KEY		"exp_key"
+#define CRO_KEY		"cro_key"
